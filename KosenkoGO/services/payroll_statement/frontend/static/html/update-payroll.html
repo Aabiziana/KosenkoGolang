@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Обновить платежную ведомость</title>
+</head>
+
+<body class="has-fixed-sidenav">
+    <header>
+    </header>
+    <main class="white">
+        <div class="container">
+            <div class="section">
+                <h5>Внести изменения в платежную ведомость</h5>
+                <form class="col s12" action="/documents/payrolls/update" method="post">
+                    <input type="hidden" name="id" value="{{ .Payroll.PayrollHeader.Id }}">
+                    <div class="row">
+                        <div class="col s6">
+                            <div class="input-field row">
+                                {{ $organizationId := .Payroll.PayrollHeader.OrganizationId }}
+                                <select name="organization_id" class="browser-default" required>
+                                    {{ range .Organizations }}
+                                    {{ if eq .Id $organizationId }}
+                                    <option value="{{ .Id }}" data-chief="{{ .Chief }}" data-financial-chief="{{ .FinancialChief }}" selected>{{ .Name }}</option>
+                                    {{ else }}
+                                    <option value="{{ .Id }}" data-chief="{{ .Chief }}" data-financial-chief="{{ .FinancialChief }}">{{ .Name }}</option>
+                                    {{ end }}
+                                    {{ end }}
+                                </select>
+                            </div>
+                            <div class="input-field row">
+                                <input id="document_number" name="document_number" type="text" class="validate" value="{{ .Payroll.PayrollHeader.DocumentNumber }}" required>
+                                <label for="document_number">Номер документа</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="date_of_issue" name="date_of_issue" type="date" class="validate" value="{{ .Payroll.PayrollHeader.DateOfIssue }}" required>
+                                <label for="date_of_issue">Дата составления</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="period_start" name="period_start" type="date" class="validate" value="{{ .Payroll.PayrollHeader.PeriodStart }}" required>
+                                <label for="period_start">Период начало</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="period_end" name="period_end" type="date" class="validate" value="{{ .Payroll.PayrollHeader.PeriodEnd }}" required>
+                                <label for="period_end">Период конец</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="subdivision" name="subdivision" type="text" class="validate" value="{{ .Payroll.PayrollHeader.Subdivision }}" required>
+                                <label for="subdivision">Структурное подразделение</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="corresponding_account" name="corresponding_account" type="text" class="validate" value="{{ .Payroll.PayrollHeader.CorrespondingAccount }}" required>
+                                <label for="corresponding_account">Корреспондирующий счет</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="payment_deadline_start" name="payment_deadline_start" type="date" class="validate" value="{{ .Payroll.PayrollHeader.PaymentDeadlineStart }}" required>
+                                <label for="payment_deadline_start">Срок выплаты начало</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="payment_deadline_end" name="payment_deadline_end" type="date" class="validate" value="{{ .Payroll.PayrollHeader.PaymentDeadlineEnd }}" required>
+                                <label for="payment_deadline_end">Срок выплаты конец</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="total_amount_words" name="total_amount_words" type="text" class="validate" value="{{ .Payroll.PayrollHeader.TotalAmountWords }}" readonly required>
+                                <label for="total_amount_words">Сумма прописью</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="total_amount" name="total_amount" type="number" step="0.01" class="validate" value="{{ .Payroll.PayrollHeader.TotalAmount }}" required>
+                                <label for="total_amount">Сумма</label>
+                            </div>
+                        </div>
+                        <div class="col s6">
+                            <div class="input-field row">
+                                <input id="deposited_amount" name="deposited_amount" type="number" step="0.01" class="validate" value="{{ .Payroll.PayrollHeader.DepositedAmount }}">
+                                <label for="deposited_amount">Депонированная сумма</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="deposited_amount_words" name="deposited_amount_words" type="text" class="validate" value="{{ .Payroll.PayrollHeader.DepositedAmountWords }}" readonly>
+                                <label for="deposited_amount_words">Депонированная сумма прописью</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="chief" name="chief" type="text" class="validate" list="employee_names" value="{{ .Payroll.PayrollHeader.Chief }}" required>
+                                <label for="chief">Руководитель организации</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="financial_chief" name="financial_chief" type="text" class="validate" list="employee_names" value="{{ .Payroll.PayrollHeader.FinancialChief }}" required>
+                                <label for="financial_chief">Главный бухгалтер</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="cashier" name="cashier" type="text" class="validate" list="employee_names" value="{{ .Payroll.PayrollHeader.Cashier }}" required>
+                                <label for="cashier">Кассир</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="cash_order_number" name="cash_order_number" type="text" class="validate" value="{{ .Payroll.PayrollHeader.CashOrderNumber }}" required>
+                                <label for="cash_order_number">Номер расходного кассового ордера</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="cash_order_date" name="cash_order_date" type="date" class="validate" value="{{ .Payroll.PayrollHeader.CashOrderDate }}" required>
+                                <label for="cash_order_date">Дата расходного кассового ордера</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="accountant" name="accountant" type="text" class="validate" list="employee_names" value="{{ .Payroll.PayrollHeader.Accountant }}" required>
+                                <label for="accountant">Проверил бухгалтер</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="sheets_count" name="sheets_count" type="number" class="validate" value="{{ .Payroll.PayrollHeader.SheetsCount }}" required>
+                                <label for="sheets_count">Количество листов</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="waves-effect waves-blue btn-flat white blue-text" type="submit"><i
+                            class="material-icons left">done</i>Подтвердить</button>
+                    <datalist id="employee_names">
+                        {{ range .EmployeeNames }}
+                        <option value="{{ . }}"></option>
+                        {{ end }}
+                    </datalist>
+                </form>
+
+                <h4>Сотрудники</h4>
+                <a href="/documents/payrolls/{{ .Payroll.PayrollHeader.Id }}/body/create?payroll_id={{ .Payroll.PayrollHeader.Id }}" class="waves-effect waves-blue btn-flat white blue-text"><i
+                        class="material-icons left">add</i>Добавить</a>
+                <table>
+                    <thead>
+                        <th>№ п/п</th>
+                        <th>Табельный номер</th>
+                        <th>ФИО</th>
+                        <th>Сумма</th>
+                        <th>Подпись</th>
+                        <th>Примечание</th>
+                        <th></th>
+                    </thead>
+                    {{ $payrollId := .Payroll.PayrollHeader.Id }}
+                    {{ range .PayrollBodyItems }}
+                    <tr>
+                        <td>{{ .RowNumber }}</td>
+                        <td>{{ .TabularNumber }}</td>
+                        <td>{{ .EmployeeName }}</td>
+                        <td>{{ printf "%.2f" .Amount }}</td>
+                        <td>{{ .Signature }}</td>
+                        <td>{{ .Note }}</td>
+                        <td>
+                            <form action="/documents/payrolls/body/delete" method="post" class="col">
+                                <input name="item_id" type="hidden" value="{{ .Id }}">
+                                <input name="payroll_id" type="hidden" value="{{ $payrollId }}">
+                                <button type="submit"
+                                    class="btn-floating z-depth-0 waves-effect waves-light margin-right">
+                                    <i class="material-icons red">delete</i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{ end }}
+                </table>
+            </div>
+        </div>
+    </main>
+    <script src="/static/js/nav.js"></script>
+    <script src="/static/js/sidenav.js"></script>
+    <script src="/documents/static/js/sidenav-documents.js"></script>
+    <script src="/static/js/materialize.min.js"></script>
+    <script>
+        (function () {
+            function decl(n, forms) {
+                n = n % 100;
+                if (n >= 11 && n <= 19) return forms[2];
+                n = n % 10;
+                if (n === 1) return forms[0];
+                if (n >= 2 && n <= 4) return forms[1];
+                return forms[2];
+            }
+
+            function triadToWords(num, female) {
+                var onesMale = ["", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"];
+                var onesFemale = ["", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"];
+                var teens = ["десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"];
+                var tens = ["", "", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто"];
+                var hundreds = ["", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"];
+
+                var words = [];
+                var h = Math.floor(num / 100);
+                var t = Math.floor((num % 100) / 10);
+                var u = num % 10;
+
+                if (h > 0) words.push(hundreds[h]);
+                if (t === 1) {
+                    words.push(teens[u]);
+                } else {
+                    if (t > 1) words.push(tens[t]);
+                    if (u > 0) words.push((female ? onesFemale : onesMale)[u]);
+                }
+                return words.join(" ");
+            }
+
+            function amountToWords(value) {
+                var num = Math.floor(parseFloat(value || "0") || 0);
+                if (num === 0) return "ноль рублей";
+
+                var words = [];
+                var millions = Math.floor(num / 1000000);
+                if (millions > 0) {
+                    words.push(triadToWords(millions, false));
+                    words.push(decl(millions, ["миллион", "миллиона", "миллионов"]));
+                }
+                num = num % 1000000;
+                var thousands = Math.floor(num / 1000);
+                if (thousands > 0) {
+                    words.push(triadToWords(thousands, true));
+                    words.push(decl(thousands, ["тысяча", "тысячи", "тысяч"]));
+                }
+                var rubles = num % 1000;
+                if (rubles > 0) {
+                    words.push(triadToWords(rubles, false));
+                }
+                words.push(decl(Math.floor(parseFloat(value || "0") || 0), ["рубль", "рубля", "рублей"]));
+                return words.join(" ").replace(/\s+/g, " ").trim();
+            }
+
+            function activateLabel(id) {
+                var lbl = document.querySelector('label[for="' + id + '"]');
+                if (lbl) lbl.classList.add('active');
+            }
+
+            function bindWords(amountId, wordsId) {
+                var amountInput = document.getElementById(amountId);
+                var wordsInput = document.getElementById(wordsId);
+                if (!amountInput || !wordsInput) return;
+                function apply() {
+                    wordsInput.value = amountToWords(amountInput.value);
+                    activateLabel(wordsId);
+                }
+                amountInput.addEventListener('input', apply);
+                apply();
+            }
+
+            [
+                'document_number', 'date_of_issue', 'period_start', 'period_end', 'subdivision', 'corresponding_account',
+                'payment_deadline_start', 'payment_deadline_end', 'total_amount_words', 'total_amount', 'deposited_amount',
+                'deposited_amount_words', 'chief', 'financial_chief', 'cashier', 'cash_order_number', 'cash_order_date',
+                'accountant', 'sheets_count'
+            ].forEach(activateLabel);
+
+            var orgSelect = document.querySelector('select[name="organization_id"]');
+            var chiefInput = document.getElementById('chief');
+            var finInput = document.getElementById('financial_chief');
+
+            function applyOrgDefaults() {
+                if (!orgSelect) return;
+                var opt = orgSelect.options[orgSelect.selectedIndex];
+                if (!opt) return;
+                var chief = opt.getAttribute('data-chief') || '';
+                var fin = opt.getAttribute('data-financial-chief') || '';
+                if (chiefInput && chiefInput.value.trim() === '' && chief.trim() !== '') {
+                    chiefInput.value = chief;
+                    activateLabel('chief');
+                }
+                if (finInput && finInput.value.trim() === '' && fin.trim() !== '') {
+                    finInput.value = fin;
+                    activateLabel('financial_chief');
+                }
+            }
+
+            if (orgSelect) {
+                orgSelect.addEventListener('change', applyOrgDefaults);
+            }
+
+            bindWords('total_amount', 'total_amount_words');
+            bindWords('deposited_amount', 'deposited_amount_words');
+
+            var form = document.querySelector('form[action="/documents/payrolls/update"]');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    var ps = document.getElementById('period_start');
+                    var pe = document.getElementById('period_end');
+                    var ds = document.getElementById('payment_deadline_start');
+                    var de = document.getElementById('payment_deadline_end');
+                    if (ps && pe && ps.value && pe.value && pe.value < ps.value) {
+                        e.preventDefault();
+                        alert('Период: дата окончания меньше даты начала');
+                        return;
+                    }
+                    if (ds && de && ds.value && de.value && de.value < ds.value) {
+                        e.preventDefault();
+                        alert('Срок выплаты: дата окончания меньше даты начала');
+                        return;
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+
+</html>

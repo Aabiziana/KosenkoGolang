@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Добавить сотрудника в ведомость</title>
+</head>
+
+<body class="has-fixed-sidenav">
+    <header>
+    </header>
+    <main class="white">
+        <div class="container">
+            <div class="section">
+                <h5>Добавить сотрудника в ведомость</h5>
+                <form class="col s12" action="/documents/payrolls/body/create" method="post">
+                    <input type="hidden" name="payroll_id" value="{{ .PayrollId }}">
+                    <div class="row">
+                        <div class="col s6">
+                            <div class="input-field row">
+                                <input id="row_number" name="row_number" type="number" class="validate" required>
+                                <label for="row_number">Номер по порядку</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="tabular_number" name="tabular_number" type="text" class="validate" required>
+                                <label for="tabular_number">Табельный номер</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="employee_name" name="employee_name" type="text" class="validate" list="employee_names" required>
+                                <label for="employee_name">Фамилия, инициалы</label>
+                            </div>
+                        </div>
+                        <div class="col s6">
+                            <div class="input-field row">
+                                <input id="amount" name="amount" type="number" step="0.01" class="validate" required>
+                                <label for="amount">Сумма</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="signature" name="signature" type="text" class="validate">
+                                <label for="signature">Подпись в получении денег</label>
+                            </div>
+                            <div class="input-field row">
+                                <input id="note" name="note" type="text" class="validate">
+                                <label for="note">Примечание</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="waves-effect waves-blue btn-flat white blue-text" type="submit"><i
+                            class="material-icons left">done</i>Подтвердить</button>
+                    <datalist id="employee_names">
+                        {{ range .EmployeeNames }}
+                        <option value="{{ . }}"></option>
+                        {{ end }}
+                    </datalist>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="/static/js/nav.js"></script>
+    <script src="/static/js/sidenav.js"></script>
+    <script src="/documents/static/js/sidenav-documents.js"></script>
+    <script src="/static/js/materialize.min.js"></script>
+</body>
+
+</html>

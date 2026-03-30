@@ -29,17 +29,10 @@
 
 ## 🚀 Запуск проекта
 
-1. Клонировать репозиторий:
+Клонировать репозиторий:
 
 ```bash
 git clone https://github.com/Aabiziana/KosenkoGolang.git
 cd KosenkoGolang
 go run main.go
 
-📈 Возможности
-	•	HTTP сервер
-	•	Обработка запросов
-	•	REST API структура
-	•	Подключение базы данных
-	•	Авторизация
-	•	Docker
